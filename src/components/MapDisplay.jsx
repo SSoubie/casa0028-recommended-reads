@@ -1,18 +1,17 @@
+import * as React from 'react';
 import Map from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-function MapDisplay(props) {
+export default function MapDisplay(props) {
   return (
     <Map
       initialViewState={{
-        longitude: props.longitude || -122.4,
-        latitude: props.latitude || 37.8,
-        zoom: props.zoom || 10
+        longitude: props.longitude,
+        latitude: props.latitude,
+        zoom: props.zoom,
       }}
-      style={{width: 600, height: 400}}
+      style={{width: '100%', height:'100vh'}}
       mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
     />
   );
 }
-
-export default MapDisplay;

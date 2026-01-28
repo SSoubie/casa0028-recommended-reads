@@ -1,18 +1,20 @@
 import { useState } from 'react'
+import './tw-styles.css'
 import TitleBar from './components/TitleBar'
 import MapDisplay from './components/MapDisplay'
-import './tw-styles.css'
-import PlaqueModal from './components/PlaqueModal'
+import PlaqueModal from './components/PlaqueModal'  
+
+
 
 function App() {
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
+const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
-    <div className="mx-auto max-w-screen-xl bg-gray-50 min-h-screen">
-      <TitleBar title="Recommended Reading" />
-      <MapDisplay longitude={-0.137310} latitude={51.521699} />
-      {isModalOpen ? <PlaqueModal /> : null}
+  <div className="mx-auto max-w-screen-xl bg-gray-50 min-h-screen">
+    <TitleBar title="📚 OpenPlaques Recommended Reading" />
+    <MapDisplay longitude={-2.78479} latitude={54.05213} zoom={14} />
+    {isModalOpen ? <PlaqueModal /> : null}
   </div>
   )
 }
