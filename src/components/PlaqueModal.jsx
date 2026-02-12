@@ -1,4 +1,29 @@
-function PlaqueModal() {
+import { useState, useEffect } from "react";
+
+function PlaqueModal(props) {
+
+//function closeModal() {props.setIsModalOpen(false)}
+
+const[books, setBooks] = useState([]);
+
+async function fetchBooks() {
+    const author = props.selectedPlaque.properties.lead_subject_name;
+
+    try {
+        const response = await fetch(`http://openlibrary.org/search.json?author=${author}&limit=5`);
+        const data = await response.json();
+        console.log("Fetched books data:", data);
+        setBooks(data.docs);
+    } catch (error) {
+        console.error("Error fetching books data:", error);
+    }
+}
+
+useEffect(() => {
+  fetchBooks();
+}, []);
+
+
   return (  
 <div
   className="fixed inset-0 z-50 grid place-content-center bg-black/50 p-4"
@@ -7,13 +32,18 @@ function PlaqueModal() {
   aria-labelledby="modalTitle"
 >
   <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-    <h2 id="modalTitle" className="text-xl font-bold text-gray-900 sm:text-2xl">Modal Title</h2>
+    <h2 id="modalTitle" className="text-xl font-bold text-gray-900 sm:text-2xl">Welcome to the Plaque Explorer</h2>
 
-    <div className="mt-4">
-      <p className="text-pretty text-gray-700">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, nisi eu consectetur. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      </p>
-    </div>
+    <button 
+                    type="button" 
+                    className="-me-4 -mt-4 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus:outline-none" 
+                    aria-label="Close"
+                    onClick={() => props.setIsModalOpen(false)}
+                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
   </div>
 </div> 
     );

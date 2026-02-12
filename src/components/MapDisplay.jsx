@@ -1,8 +1,31 @@
-import * as React from 'react';
-import Map from 'react-map-gl/maplibre';
+import { useState } from 'react';
+import {Map, Source, Layer,  Popup} from 'react-map-gl/maplibre'; // we import the components from react-map-gl/maplibre. This allows us to add a custom data source and define how it should be rendered.
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { plaqueData } from '../data/open-plaques-london-2023-11-10-filtered'; // We import the object / Our data source. 
 
 export default function MapDisplay(props) {
+
+  // a new function to handle map clicks.
+  const handleMapClick = (event) => { 
+    const features = event.features;
+    if (features.length) {
+      const clickedFeature = features[0];
+       props.setSelectedPlaque(clickedFeature);
+    }
+}
+  // We create a style object for the layer that will display our plaques.
+   const plaqueLayerStyle = {
+       id: 'plaques-layer',
+       type: 'circle',
+       source: 'plaques-data',
+       paint: {
+           'circle-radius': 6,
+           'circle-color': '#007cbf',
+           'circle-stroke-width': 2,
+           'circle-stroke-color': '#ffffff'
+       },
+   }
+
   return (
     <Map
       initialViewState={{
@@ -12,6 +35,44 @@ export default function MapDisplay(props) {
       }}
       style={{width: '100%', height:'100vh'}}
       mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-    />
+      interactiveLayerIds={['plaques-layer']} // we specify the interactive layer IDs to enable interactivity on our plaques layer. We defined one earlier in the plaqueLayerStyle object.
+      onClick={handleMapClick}
+       >
+       <Source // we add a component that takes the plaque data as its data prop.
+           id="plaques-data"
+           type="geojson"
+           data={plaqueData}
+       >
+           <Layer // we've added a Layer component that uses the plaqueLayerStyle object to define how the plaques should be rendered
+           {...plaqueLayerStyle} /> 
+       </Source>
+
+       {props.selectedPlaque && (
+    <Popup
+        anchor="bottom"
+        longitude={props.selectedPlaque.geometry.coordinates[0]}
+        latitude={props.selectedPlaque.geometry.coordinates[1]}
+        onClose={() => props.setSelectedPlaque(null)}
+    >
+        <div>
+            <h2 className="text-xl font-semibold mb-2">{props.selectedPlaque.properties?.lead_subject_name}</h2>
+            <p className="text-sm text-gray-500">{props.selectedPlaque.properties?.inscription ? props.selectedPlaque.properties.inscription.slice(0, 150) : ''}</p>
+            <p className="text-xs text-blue-500 my-2">
+              <a href={`https://openplaques.org/plaques/${props.selectedPlaque.properties?.id1}`}>OpenPlaques</a>
+            </p>
+            <p className="text-xs text-blue-500 my-2">
+              <a href={props.selectedPlaque.properties?.lead_subject_wikipedia}>Wikipedia</a>
+            </p>
+            <button
+                className="rounded-l-sm border border-gray-200 px-3 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white focus:outline-none disabled:pointer-events-auto disabled:opacity-50"
+                onClick={() => props.setIsModalOpen(true)}
+            >
+              Recommended Reading here
+            </button>
+        </div>
+    </Popup>
+    )
+    }
+    </Map>
   );
 }
